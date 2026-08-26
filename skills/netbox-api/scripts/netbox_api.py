@@ -10,7 +10,8 @@ Usage:
 Env: NETBOX_BASE (your instance, e.g. https://netbox.example.com).
 Auth: --token *** flag, else read from ~/.config/netbox/token (chmod 600,
       one token per line). Never hardcode the token in files or commits.
-TLS: unverified context (internal cert) — equivalent to curl -k.
+TLS: certificate verification ON by default. Internal/self-signed CAs:
+     export NETBOX_INSECURE_TLS=1 (equivalent to curl -k).
 Stdout: JSON. Exit: 0 ok, 1 HTTP error, 2 usage/auth error.
 
 Pagination: `all` follows the `next` URL from each response — never steps
@@ -35,9 +36,11 @@ def _load_token():
         return ""
 
 TOK = _load_token()
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
+ctx = ssl.create_default_context()  # certificate verification ON by default
+if os.environ.get("NETBOX_INSECURE_TLS"):
+    # Opt-out for internal/self-signed CAs (equivalent to curl -k).
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
 
 
 def req(method, path, payload=None):

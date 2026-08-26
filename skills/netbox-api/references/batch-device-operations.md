@@ -65,6 +65,7 @@ PATCH /api/dcim/devices/{id}/
   `{"id":…, "name":…}` (unhashable dict — use `.get('id')`).
 - 42U racks: U positions counted from 1; "RU 1 → 2" style docs = 2U nodes at
   starting units 1, 3, 5, ….
-- TLS: internal cert — `ssl` unverified context for urllib; `curl -k` equivalent.
+- TLS: internal cert — the script verifies certificates by default; for
+  self-signed CAs export `NETBOX_INSECURE_TLS=1` (equivalent to `curl -k`).
 - Keep tokens in the script/session only; do NOT write them into skill files or
   reference notes (this file intentionally has none).
